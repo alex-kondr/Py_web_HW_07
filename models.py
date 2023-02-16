@@ -1,10 +1,10 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Integer, String, Boolean
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
-from sqlalchemy.sql.schema import ForeignKey, Table
-from sqlalchemy.sql.sqltypes import DateTime
+from sqlalchemy.sql.schema import ForeignKey
+from sqlalchemy.sql.sqltypes import Date
 
 
 Base = declarative_base()
@@ -15,13 +15,13 @@ class Group(Base):
     __tablename__ = "Groups"
     
     id = Column(Integer, primary_key=True)
-    name = Column(String(20), nullable=False)
+    name = Column(String(50), nullable=False)
     students = relationship("Student", cascade="all, delete", backref="Group")
     
     
 class Student(Base):
     
-    __tablename__ = "Studends"
+    __tablename__ = "Students"
     
     id = Column(Integer, primary_key=True)
     fullname = Column(String(50), nullable=False, unique=True)
@@ -54,7 +54,7 @@ class Grade(Base):
     
     id = Column(Integer, primary_key=True)
     rating = Column(Integer, nullable=False)
-    date = Column(DateTime, default=datetime.now())
+    date = Column(Date, default=datetime.now().date)
     student_id = Column(Integer, ForeignKey(Student.id, ondelete="CASCADE"))
     subject_id = Column(Integer, ForeignKey(Subject.id, ondelete="CASCADE"))
     

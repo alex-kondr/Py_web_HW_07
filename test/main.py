@@ -1,4 +1,4 @@
-from sqlalchemy import select
+from sqlalchemy import func, select, desc 
 
 from connect_db import session
 from models import Note, Tag, Record, note_m2m_tag

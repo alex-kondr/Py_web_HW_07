@@ -10,7 +10,7 @@ NUMBER_STUDENTS = 50
 NUMBER_GROUPS = 3
 NUMBER_TEACHERS = 5
 NUMBER_SUBJECTS = 8
-NUMBER_GRADES = 20
+NUMBER_EVALUATIONS = 20
 
 
 def generate_fake_data(number_students: int,
@@ -51,42 +51,22 @@ def generate_fake_data(number_students: int,
     return fake_students, fake_groups, fake_teachers, fake_subjects
 
 
-def insert_to_db(students: list,
+def prepare_data(students: list,
                  groups: list,
                  teachers: list,
-                 subjects: list) -> None:
+                 subjects: list) -> tuple[list[tuple]]:
 
-    [session.add(Group(name=group)) for group in groups]
-    session.commit()    
+    # [session.add(Group(name=group)) for group in groups]
+    session.add(Group(name=groups))
     
-    [session.add(Student(fullname=student, group_id=randint(1, NUMBER_GROUPS)))
-                    for student in students]
-    session.commit()    
-    
-    [session.add(Teacher(fullname=teacher)) for teacher in teachers]
-    session.commit()
-    
-    [session.add(Subject(name=subject, teacher_id=randint(1, NUMBER_TEACHERS)))
-                    for subject in subjects]
-    session.commit()
-
-    for ns in range(1, NUMBER_STUDENTS+1):
-        for _ in range(NUMBER_GRADES):
-            grade_date = date(
-                year=2023, month=randint(1, 12), day=randint(1, 20))
-            session.add(Grade(
-                rating=randint(60, 100), 
-                date=grade_date,
-                student_id=ns, 
-                subject_id=randint(1, NUMBER_SUBJECTS)
-            ))
-            
     session.commit()
 
 
 if __name__ == "__main__":
+    
+    # session.add(Group(name="HW-101"))
+    # session.commit()
 
     fake_data = generate_fake_data(
         NUMBER_STUDENTS, NUMBER_GROUPS, NUMBER_TEACHERS, NUMBER_SUBJECTS)
-    
-    insert_to_db(*fake_data)
+    prepare_data(*fake_data)

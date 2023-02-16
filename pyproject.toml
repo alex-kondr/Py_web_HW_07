@@ -13,6 +13,7 @@ alembic = "^1.9.3"
 alchemy = "^20.5"
 wheel = "^0.38.4"
 mysql-connector-python = "^8.0.32"
+faker = "^17.0.0"
 
 
 [tool.poetry.group.dev.dependencies]
