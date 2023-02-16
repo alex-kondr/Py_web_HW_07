@@ -11,7 +11,12 @@ packages = [{include = "py_web_hw_07"}]
 python = "^3.10"
 alembic = "^1.9.3"
 alchemy = "^20.5"
+wheel = "^0.38.4"
+mysql-connector-python = "^8.0.32"
 
+
+[tool.poetry.group.dev.dependencies]
+autopep8 = "^2.0.1"
 
 [build-system]
 requires = ["poetry-core"]
