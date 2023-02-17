@@ -12,7 +12,7 @@ def select_1():
         .group_by(Student.id)
         .order_by(desc("avg_grade"))
         .limit(5)
-        ).all()
+    ).mappings().all()
     
     return result
 
@@ -33,6 +33,104 @@ def select_2():
     return result
 
 
+def select_3():
+    
+    result = session.execute(
+        select(func.round(func.avg(Grade.rating), 1).label("avg_rating"), Group.name.label("group"), Subject.name.label("subject"))
+        .select_from(Grade)
+        .join(Student)
+        .join(Subject)
+        .join(Group)
+        .filter(Subject.name == "music")
+        .group_by(Group.id, Subject.id)
+        .order_by(desc("avg_rating"))
+        ).mappings().all()
+    
+    return result
+
+
+def select_4():
+    
+    result = session.execute(
+        select(func.round(func.avg(Grade.rating)).label("avg_rating"))
+    ).mappings().all()
+    
+    return result
+
+
+def select_5():
+    
+    result = session.execute(
+        select(Subject.name.label("subject"), Teacher.fullname.label("teacher"))
+        .join(Subject)
+    ).mappings().all()
+    
+    return result
+
+
+def select_6():
+    
+    result = session.execute(
+        select(Student.fullname.label("student"), Group.name.label("group"))
+        .select_from(Student)
+        .join(Group)
+        .where(Group.name == "Young LLC")
+    ).mappings().all()
+    
+    return result
+
+
+def select_7():
+    
+    result = session.execute(
+        select(Student.fullname.label('student'), Grade.rating, Grade.date, Group.name.label('group'), Subject.name.label('subject'))
+        .select_from(Grade)
+        .join(Student)
+        .join(Group)
+        .join(Subject)
+        .where(Subject.name == "music")
+        .where(Group.name == "Young LLC")
+        .order_by(Student.fullname)
+    ).mappings().all()
+    
+    return result
+
+
+def select_8():
+    
+    result = session.execute(
+        select(func.round(func.avg(Grade.rating), 1).label("rating"), Teacher.fullname.label("teacher"), Subject.name.label('subject'))
+        .select_from(Grade)
+        .join(Subject)
+        .join(Teacher)
+        .group_by(Teacher.id, Subject.id)
+    ).mappings().all()
+    
+    return result
+
+
+def select_9():
+
+    result = session.execute(
+        select()
+        .select_from()
+        .join()
+    ).mappings().all()
+
+    return result
+
+
+def select_10():
+
+    result = session.execute(
+        select()
+        .select_from()
+        .join()
+    ).mappings().all()
+
+    return result
+
+
 if __name__ == "__main__":
     
-    print(select_2())
+    print(select_8())
