@@ -70,11 +70,13 @@ def select_5():
 
 def select_6():
     
+    group = "Young LLC"
+    
     result = session.execute(
         select(Student.fullname.label("student"), Group.name.label("group"))
         .select_from(Student)
         .join(Group)
-        .where(Group.name == "Young LLC")
+        .where(Group.name == group)
     ).mappings().all()
     
     return result
@@ -82,14 +84,17 @@ def select_6():
 
 def select_7():
     
+    subject = "music"
+    group = "Young LLC"
+    
     result = session.execute(
         select(Student.fullname.label('student'), Grade.rating, Grade.date, Group.name.label('group'), Subject.name.label('subject'))
         .select_from(Grade)
         .join(Student)
         .join(Group)
         .join(Subject)
-        .where(Subject.name == "music")
-        .where(Group.name == "Young LLC")
+        .where(Subject.name == subject)
+        .where(Group.name == group)
         .order_by(Student.fullname)
     ).mappings().all()
     
@@ -110,13 +115,15 @@ def select_8():
 
 
 def select_9():
+    
+    student = "Nicole Lambert"
 
     result = session.execute(
         select(Subject.name.label("subject"), Student.fullname.label("student"))
         .select_from(Subject)
         .join(Grade)
         .join(Student)
-        .where(Student.fullname == "Nicole Lambert")
+        .where(Student.fullname == student)
         .group_by(Subject.id)
     ).mappings().all()
 
@@ -124,6 +131,9 @@ def select_9():
 
 
 def select_10():
+    
+    student = "Nicole Lambert"
+    teacher = "Jasmine Martin"
 
     result = session.execute(
         select(Subject.name.label("subject"))
@@ -131,14 +141,78 @@ def select_10():
         .join(Student)
         .join(Subject)
         .join(Teacher)
-        .where(Student.fullname == "Nicole Lambert")
-        .where(Teacher.fullname == "Jasmine Martin")
+        .where(Student.fullname == student)
+        .where(Teacher.fullname == teacher)
         .group_by(Subject.id)
     ).mappings().all()
 
     return result
 
 
+def select_11():
+    
+    student = "Nicole Lambert"
+    teacher = "Jasmine Martin"
+
+    result = session.execute(
+        select(func.round(func.avg(Grade.rating), 1).label("avg_rating"))
+        .select_from(Grade)
+        .join(Student)
+        .join(Subject)
+        .join(Teacher)
+        .where(Student.fullname == student)
+        .where(Teacher.fullname == teacher)
+        .group_by(Student.id, Teacher.id)
+    ).mappings().all()
+
+    return result
+
+
+def select_12():
+    
+    subject = "music"
+    group = "Young LLC"
+    
+    def create_execute(select_: list|tuple):
+        
+        execute_ = (select(*select_)
+                    .select_from(Grade)
+                    .join(Student)
+                    .join(Subject)
+                    .join(Group)
+                    .where(Group.name == group)
+                    .where(Subject.name == subject)
+                    )
+        
+        return execute_
+    
+    select_main = (Grade.rating, 
+                   Grade.date, 
+                   Student.fullname.label("student"), 
+                   Group.name.label("group"), 
+                   Subject.name.label("subject")
+                   )
+    
+    select_minor = (Grade.date,)
+    
+    
+    execute_minor = (create_execute(select_minor)
+                     .order_by(desc(Grade.date))
+                     .limit(1)
+                     .scalar_subquery()
+                     )
+    
+    execute_main = (create_execute(select_main)
+                    .where(Grade.date == execute_minor)
+                    )
+    
+    result = session.execute(
+        execute_main
+        ).mappings().all()
+    
+    return result
+
+
 if __name__ == "__main__":
     
-    print(select_10())
+    print(select_12())
