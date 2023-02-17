@@ -112,9 +112,12 @@ def select_8():
 def select_9():
 
     result = session.execute(
-        select()
-        .select_from()
-        .join()
+        select(Subject.name.label("subject"), Student.fullname.label("student"))
+        .select_from(Subject)
+        .join(Grade)
+        .join(Student)
+        .where(Student.fullname == "Nicole Lambert")
+        .group_by(Subject.id)
     ).mappings().all()
 
     return result
@@ -123,9 +126,14 @@ def select_9():
 def select_10():
 
     result = session.execute(
-        select()
-        .select_from()
-        .join()
+        select(Subject.name.label("subject"))
+        .select_from(Grade)
+        .join(Student)
+        .join(Subject)
+        .join(Teacher)
+        .where(Student.fullname == "Nicole Lambert")
+        .where(Teacher.fullname == "Jasmine Martin")
+        .group_by(Subject.id)
     ).mappings().all()
 
     return result
@@ -133,4 +141,4 @@ def select_10():
 
 if __name__ == "__main__":
     
-    print(select_8())
+    print(select_10())
