@@ -1,10 +1,10 @@
 import argparse
+from sqlalchemy import select
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime
 
 from connect_db import session
 from models import Grade, Student, Group, Subject, Teacher
-
 
 
 parser = argparse.ArgumentParser(
@@ -38,16 +38,16 @@ parser.add_argument("-r", "--rating",
                     type=int)
 
 parser.add_argument("-d", "--date", 
-                    metavar="Value for Grade", 
-                    type=date)
+                    metavar="Value for Grade",
+                    type=datetime)
 
 parser.add_argument("--student_id", 
                     metavar="Value for Grade", 
-                    type=date)
+                    type=int)
 
 parser.add_argument("--subject_id", 
                     metavar="Value for Grade", 
-                    type=date)
+                    type=int)
 
 parser.add_argument("--id", 
                     metavar="ID record number", 
@@ -55,9 +55,6 @@ parser.add_argument("--id",
 
 args = parser.parse_args()
 
-# print(list(Teacher.__table__.columns))
-
-# print(vars(args))
 
 def get_model(model: str):
 
@@ -72,72 +69,88 @@ def get_model(model: str):
     return models.get(model)
 
 
-def commit_record(record):
+def create_teacher():
     
-    session.add(record)
+    session.add(Teacher(name=args.name))
+    session.commit()
+    
+
+def create_group():
+    
+    session.add(Group(name=args.name))
+    session.commit()
+    
+
+def create_student():
+    
+    session.add(Student(name=args.name, 
+                        group_id=args.group_id))
+    session.commit()
+    
+
+def create_subject():
+    
+    session.add(Subject(name=args.name, 
+                        teacher_id=args.teacher_id))
+    session.commit()
+    
+
+def create_grade():
+    
+    session.add(Grade(rating=args.rating,
+                      date=args.date,
+                      student_id=args.student_id,
+                      subject_id=args.subject_id))
     session.commit()
 
 
-def create_teacher(name: str):    
-    return Teacher(name=name)
-
-
-def create_group(name: str):
-    return Group(name=name)
-
-def create_student(name: str, group_id:int=None):
-    return Student(name=name, group_id=group_id)
-
-def create_subject(name: str, teacher_id:int=None):
-    return Subject(name=name, teacher_id=teacher_id)
-
-
-def create_grade(rating: int, date=datetime().now().date):
-    return 
-
-
-def remove_record(model: str, **kwargs):
+def remove_record():
     
-    model = get_model(model)
-    id = kwargs.get("id")
+    model = get_model(args.model)
     
-    session.query(model).filter(model.id == id).delete()
+    session.query(model).filter(model.id == args.id).delete()
     session.commit()
+    
+    
+def list_records():
+    
+    model = get_model(args.model)
+    
+    result = session.execute(
+        select(model.name)
+    ).all()
+    
+    print(result)
+    
+
+def update_model():
+    
+    model = get_model(args.model)
+    session.merge(model(id=args.id, name=args.name))
+    session.commit()    
     
     
 def get_action(action: str):
     
     actions = {
-        # "create": create_record,
-        "update": session.merge,
-        "remove": remove_record
+        "create Teacher": create_teacher,
+        "create Group": create_group,
+        "create Subject": create_subject,
+        "create Student": create_student,
+        "create Grade": create_grade,
+        f"list {args.model}": list_records,
+        f"update {args.model}": update_model,
+        f"remove {args.model}": remove_record
     }
     
     return actions.get(action)
 
 
-if __name__ == "__main__":
+if __name__ == "__main__":    
     
-    # model = MODELS[args.model]
-    
-    # try:
-    #     session.add(model(fullname=args.name))
-    #     session.commit()
-    # except SQLAlchemyError as e:
-    #     print(e.args)
-    
-    # record = session.query(Teacher).filter(Teacher.id==6)
-    
-    # session.merge(Teacher(id=6, fullname="Krya1"))
-    # session.commit()
-    
-    
-    # try:
+    try:        
+        action = get_action(f"{args.action} {args.model}")
+        action()
         
-    #     action = get_action(args.action)
-    #     action(args.model, vars(args))
-        
-    # except SQLAlchemyError as e:
-    #     print(e.args)
-    
-    pass
+    except SQLAlchemyError as e:
+        print(e.args)
