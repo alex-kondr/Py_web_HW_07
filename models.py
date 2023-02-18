@@ -24,7 +24,7 @@ class Student(Base):
     __tablename__ = "Students"
     
     id = Column(Integer, primary_key=True)
-    fullname = Column(String(50), nullable=False, unique=True)
+    name = Column(String(50), nullable=False, unique=True)
     grades = relationship("Grade", cascade="all, delete", backref="student")
     group_id = Column(Integer, ForeignKey(Group.id, ondelete="CASCADE"))
     
@@ -34,7 +34,7 @@ class Teacher(Base):
     __tablename__ = "Teachers"
     
     id = Column(Integer, primary_key=True)
-    fullname = Column(String(50), nullable=False, unique=True)
+    name = Column(String(50), nullable=False, unique=True)
     subjects = relationship("Subject", cascade="all, delete", backref="teacher")
 
     

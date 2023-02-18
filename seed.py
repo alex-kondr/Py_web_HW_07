@@ -59,11 +59,11 @@ def insert_to_db(students: list,
     [session.add(Group(name=group)) for group in groups]
     session.commit()    
     
-    [session.add(Student(fullname=student, group_id=randint(1, NUMBER_GROUPS)))
+    [session.add(Student(name=student, group_id=randint(1, NUMBER_GROUPS)))
                     for student in students]
     session.commit()    
     
-    [session.add(Teacher(fullname=teacher)) for teacher in teachers]
+    [session.add(Teacher(name=teacher)) for teacher in teachers]
     session.commit()
     
     [session.add(Subject(name=subject, teacher_id=randint(1, NUMBER_TEACHERS)))

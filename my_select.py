@@ -7,7 +7,7 @@ from models import Group, Student, Teacher, Subject, Grade
 def select_1():
     
     result = session.execute(
-        select(func.round(func.avg(Grade.rating), 1).label("avg_grade"), Student.fullname)
+        select(func.round(func.avg(Grade.rating), 1).label("avg_grade"), Student.name)
         .join(Student)
         .group_by(Student.id)
         .order_by(desc("avg_grade"))
@@ -20,7 +20,7 @@ def select_1():
 def select_2():
     
     result = (session.query(
-        func.round(func.avg(Grade.rating), 1).label("avg_rating"), Student.fullname, Subject.name)
+        func.round(func.avg(Grade.rating), 1).label("avg_rating"), Student.name, Subject.name)
         .select_from(Grade)
         .join(Student)
         .join(Subject)
@@ -61,7 +61,7 @@ def select_4():
 def select_5():
     
     result = session.execute(
-        select(Subject.name.label("subject"), Teacher.fullname.label("teacher"))
+        select(Subject.name.label("subject"), Teacher.name.label("teacher"))
         .join(Subject)
     ).mappings().all()
     
@@ -73,7 +73,7 @@ def select_6():
     group = "Young LLC"
     
     result = session.execute(
-        select(Student.fullname.label("student"), Group.name.label("group"))
+        select(Student.name.label("student"), Group.name.label("group"))
         .select_from(Student)
         .join(Group)
         .where(Group.name == group)
@@ -88,14 +88,14 @@ def select_7():
     group = "Young LLC"
     
     result = session.execute(
-        select(Student.fullname.label('student'), Grade.rating, Grade.date, Group.name.label('group'), Subject.name.label('subject'))
+        select(Student.name.label('student'), Grade.rating, Grade.date, Group.name.label('group'), Subject.name.label('subject'))
         .select_from(Grade)
         .join(Student)
         .join(Group)
         .join(Subject)
         .where(Subject.name == subject)
         .where(Group.name == group)
-        .order_by(Student.fullname)
+        .order_by(Student.name)
     ).mappings().all()
     
     return result
@@ -104,7 +104,7 @@ def select_7():
 def select_8():
     
     result = session.execute(
-        select(func.round(func.avg(Grade.rating), 1).label("rating"), Teacher.fullname.label("teacher"), Subject.name.label('subject'))
+        select(func.round(func.avg(Grade.rating), 1).label("rating"), Teacher.name.label("teacher"), Subject.name.label('subject'))
         .select_from(Grade)
         .join(Subject)
         .join(Teacher)
@@ -119,11 +119,11 @@ def select_9():
     student = "Nicole Lambert"
 
     result = session.execute(
-        select(Subject.name.label("subject"), Student.fullname.label("student"))
+        select(Subject.name.label("subject"), Student.name.label("student"))
         .select_from(Subject)
         .join(Grade)
         .join(Student)
-        .where(Student.fullname == student)
+        .where(Student.name == student)
         .group_by(Subject.id)
     ).mappings().all()
 
@@ -141,8 +141,8 @@ def select_10():
         .join(Student)
         .join(Subject)
         .join(Teacher)
-        .where(Student.fullname == student)
-        .where(Teacher.fullname == teacher)
+        .where(Student.name == student)
+        .where(Teacher.name == teacher)
         .group_by(Subject.id)
     ).mappings().all()
 
@@ -160,8 +160,8 @@ def select_11():
         .join(Student)
         .join(Subject)
         .join(Teacher)
-        .where(Student.fullname == student)
-        .where(Teacher.fullname == teacher)
+        .where(Student.name == student)
+        .where(Teacher.name == teacher)
         .group_by(Student.id, Teacher.id)
     ).mappings().all()
 
@@ -188,7 +188,7 @@ def select_12():
     
     select_main = (Grade.rating, 
                    Grade.date, 
-                   Student.fullname.label("student"), 
+                   Student.name.label("student"), 
                    Group.name.label("group"), 
                    Subject.name.label("subject")
                    )
