@@ -55,6 +55,15 @@ parser.add_argument("--id",
 
 args = parser.parse_args()
 
+# print(vars(args))
+
+# for key, value in vars(args).items():
+#     print(f"{key=}: {value=}")
+
+args_for_model = {key: value for key, value in vars(args).items() if value and key not in ("action", "model")}
+
+# print(args_for_model)
+
 
 def get_model(model: str):
 
@@ -69,10 +78,19 @@ def get_model(model: str):
     return models.get(model)
 
 
+def create_record():
+    
+    model = get_model(args.model)
+    session.add(model(**args_for_model))
+    session.commit()
+
+
 def create_teacher():
     
-    session.add(Teacher(name=args.name))
-    session.commit()
+    # session.add(
+    Teacher(**{"name": args.name})
+    print(Teacher.id.key.index)  # , {Teacher.name=}")
+    # session.commit()
     
 
 def create_group():
@@ -133,6 +151,7 @@ def update_model():
 def get_action(action: str):
     
     actions = {
+        "create": create_record,
         "create Teacher": create_teacher,
         "create Group": create_group,
         "create Subject": create_subject,
@@ -146,10 +165,10 @@ def get_action(action: str):
     return actions.get(action)
 
 
-if __name__ == "__main__":    
+if __name__ == "__main__":
     
     try:        
-        action = get_action(f"{args.action} {args.model}")
+        action = get_action(args.action)
         action()
         
     except SQLAlchemyError as e:
